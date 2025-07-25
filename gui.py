@@ -132,8 +132,8 @@ def start_gui():
 
     # 📌 下載類型下拉選單
     tk.Label(setting_frame, text="下載類型:").pack(anchor="w", pady=(10, 0))
-    download_type = tk.StringVar(value="音樂")
-    download_type_box = ttk.Combobox(setting_frame, textvariable=download_type, values=["音樂", "影片"], state="readonly", width=10)
+    download_type = tk.StringVar(value="audio")
+    download_type_box = ttk.Combobox(setting_frame, textvariable=download_type, values=["audio", "video"], state="readonly", width=10)
     download_type_box.pack()
 
     # 建立音訊設定區塊
@@ -160,7 +160,7 @@ def start_gui():
 
     # 切換類型時顯示/遮蔽內容但保留位置
     def toggle_audio_settings(event=None):
-        if download_type.get() == "音樂":
+        if download_type.get() == "audio":
             label_audio_format.pack(anchor="w", pady=(10, 0))
             combo_audio_format.pack()
             label_audio_quality.pack(anchor="w", pady=(10, 0))
