@@ -45,6 +45,31 @@ def call_yt_dlp(url, output_path, format_selected, quality_selected):
         )
     except subprocess.CalledProcessError as e:
         print(f"❌ 下載失敗：{url}\n{e}")
+
+def call_yt_dlp_video(url, output_path, audio_format=None, audio_quality=None):
+    yt_dlp_path = extract_binary("yt-dlp.exe")
+    if not os.path.exists(yt_dlp_path):
+        print("❌ 錯誤：找不到 yt-dlp.exe")
+        return
+
+    # 🔥 強制選擇最高畫質和最高音質
+    format_code = "bestvideo+bestaudio/best"
+
+    command = [
+        yt_dlp_path, url,
+        "-f", format_code,
+        "--no-playlist",
+        "-o", f"{output_path}/%(title)s.%(ext)s"
+    ]
+
+    try:
+        subprocess.run(
+            command,
+            check=True,
+            creationflags=subprocess.CREATE_NO_WINDOW
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"❌ 影片下載失敗：{url}\n{e}")
     
 def get_search_results(query, platform, max_results):
     search_prefix = "ytsearch" if platform == "YouTube" else "scsearch"
@@ -83,8 +108,6 @@ def get_title(url):
     except (subprocess.CalledProcessError, json.JSONDecodeError):
         return url
 
-
-
 def download_music(search_queries, options, progress_callback):
     format_selected = options["format"]
     quality_selected = options["quality"]
@@ -94,6 +117,7 @@ def download_music(search_queries, options, progress_callback):
     max_duration     = options["max_duration"]
     sleep_time       = options["sleep"]
     max_results      = options["max_results"]
+    download_type    = options["download_type"]
 
     total = len(search_queries)
     success_list = []
@@ -108,7 +132,12 @@ def download_music(search_queries, options, progress_callback):
             progress_callback(current, total, query)
             ffmpeg_path = extract_binary("ffmpeg.exe")
             os.environ["PATH"] = os.path.dirname(ffmpeg_path) + ";" + os.environ["PATH"]
-            call_yt_dlp(query, output_path, format_selected, quality_selected)
+
+            if download_type == "video":
+                call_yt_dlp_video(query, output_path, audio_format=format_selected, audio_quality=quality_selected)
+            else:
+                call_yt_dlp(query, output_path, format_selected, quality_selected)
+
             success_list.append(query)
             continue
         results = get_search_results(query, platform, max_results)
@@ -121,7 +150,12 @@ def download_music(search_queries, options, progress_callback):
                 progress_callback(current, total, title)
                 ffmpeg_path = extract_binary("ffmpeg.exe")
                 os.environ["PATH"] = os.path.dirname(ffmpeg_path) + ";" + os.environ["PATH"]
-                call_yt_dlp(url, output_path, format_selected, quality_selected)
+
+                if download_type == "video":
+                    call_yt_dlp_video(url, output_path, audio_format=format_selected, audio_quality=quality_selected)
+                else:
+                    call_yt_dlp(query, output_path, format_selected, quality_selected)
+
                 success_list.append(title)
                 break
         else:

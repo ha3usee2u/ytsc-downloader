@@ -37,9 +37,11 @@ def start_gui():
 
         if not output_path or not os.path.isdir(output_path):
             messagebox.showerror("錯誤", "請輸入有效的下載資料夾路徑")
+            download_button.config(text="開始下載", state="normal")
             return
         if not queries:
             messagebox.showwarning("錯誤", "請輸入至少一個搜尋關鍵字")
+            download_button.config(text="開始下載", state="normal")
             return
 
         try:
@@ -48,12 +50,14 @@ def start_gui():
             sleep_interval = int(sleep_entry.get())
         except ValueError:
             messagebox.showerror("錯誤", "請輸入正確的數值")
+            download_button.config(text="開始下載", state="normal")
             return
 
         try:
             max_results = int(max_results_entry.get())
         except ValueError:
             messagebox.showerror("錯誤", "請輸入正確的 max_results 整數")
+            download_button.config(text="開始下載", state="normal")
             return
 
         options = {
@@ -65,6 +69,7 @@ def start_gui():
             "max_duration": max_duration,
             "sleep": sleep_interval,
             "max_results": max_results,
+            "download_type": download_type.get()
         }
 
         def finish_download_ui(success, skipped):
@@ -125,13 +130,50 @@ def start_gui():
     browse_btn = tk.Button(path_subframe, text="瀏覽", command=browse_directory)
     browse_btn.pack(side="left", padx=5)
 
-    tk.Label(setting_frame, text="音訊格式:").pack(anchor="w", pady=(10, 0))
-    audio_format = tk.StringVar(value="mp3")
-    ttk.Combobox(setting_frame, textvariable=audio_format, values=["mp3", "m4a", "wav"], state="readonly", width=10).pack()
+    # 📌 下載類型下拉選單
+    tk.Label(setting_frame, text="下載類型:").pack(anchor="w", pady=(10, 0))
+    download_type = tk.StringVar(value="音樂")
+    download_type_box = ttk.Combobox(setting_frame, textvariable=download_type, values=["音樂", "影片"], state="readonly", width=10)
+    download_type_box.pack()
 
-    tk.Label(setting_frame, text="音訊品質 (kbps):").pack(anchor="w", pady=(10, 0))
+    # 建立音訊設定區塊
+    audio_settings_frame = tk.Frame(setting_frame)
+
+    # 音訊格式
+    label_audio_format = tk.Label(audio_settings_frame, text="音訊格式:")
+    label_audio_format.pack(anchor="w", pady=(10, 0))
+    audio_format = tk.StringVar(value="mp3")
+    combo_audio_format = ttk.Combobox(audio_settings_frame, textvariable=audio_format,
+                                    values=["mp3", "m4a", "wav"], state="readonly", width=10)
+    combo_audio_format.pack()
+
+    # 音訊品質
+    label_audio_quality = tk.Label(audio_settings_frame, text="音訊品質 (kbps):")
+    label_audio_quality.pack(anchor="w", pady=(10, 0))
     audio_quality = tk.StringVar(value="320")
-    ttk.Combobox(setting_frame, textvariable=audio_quality, values=["128", "192", "320"], state="readonly", width=10).pack()
+    combo_audio_quality = ttk.Combobox(audio_settings_frame, textvariable=audio_quality,
+                                        values=["128", "192", "320"], state="readonly", width=10)
+    combo_audio_quality.pack()
+
+    # 用 pack() 固定位置（初始顯示）
+    audio_settings_frame.pack(anchor="w", fill="x")
+
+    # 切換類型時顯示/遮蔽內容但保留位置
+    def toggle_audio_settings(event=None):
+        if download_type.get() == "音樂":
+            label_audio_format.pack(anchor="w", pady=(10, 0))
+            combo_audio_format.pack()
+            label_audio_quality.pack(anchor="w", pady=(10, 0))
+            combo_audio_quality.pack()
+        else:
+            label_audio_format.pack_forget()
+            combo_audio_format.pack_forget()
+            label_audio_quality.pack_forget()
+            combo_audio_quality.pack_forget()
+
+    # 綁定事件
+    download_type_box.bind("<<ComboboxSelected>>", toggle_audio_settings)
+
 
     # 建立新的一列 Frame
     duration_frame = tk.Frame(setting_frame)
