@@ -7,6 +7,7 @@ import time
 import json
 from utils import smart_query_mode
 from urllib.parse import urlparse
+import datetime
 
 def extract_binary(name):
     # 從 PyInstaller 打包的 _MEIPASS 資料夾取出執行檔
@@ -55,11 +56,31 @@ def call_yt_dlp_video(url, output_path, audio_format=None, audio_quality=None):
     # 🔥 強制選擇最高畫質和最高音質
     format_code = "bestvideo+bestaudio/best"
 
+    # 先取得影片標題以判斷是否重複
+    get_title_cmd = [
+        yt_dlp_path, url,
+        "--get-title"
+    ]
+    try:
+        title = subprocess.check_output(get_title_cmd, creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+    except subprocess.CalledProcessError as e:
+        print(f"❌ 無法取得影片標題：{url}\n{e}")
+        return
+
+    # 檢查是否已有同名檔案
+    base_filename = f"{title}.mp4"
+    full_path = os.path.join(output_path, base_filename)
+    if os.path.exists(full_path):
+        # 加上時間戳記避免覆蓋
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        base_filename = f"{title}_{timestamp}.mp4"
+        full_path = os.path.join(output_path, base_filename)
+
     command = [
         yt_dlp_path, url,
         "-f", format_code,
         "--no-playlist",
-        "-o", f"{output_path}/%(title)s.%(ext)s"
+        "-o", full_path
     ]
 
     try:
