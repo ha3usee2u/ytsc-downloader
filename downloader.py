@@ -47,7 +47,7 @@ def call_yt_dlp(url, output_path, format_selected, quality_selected):
     except subprocess.CalledProcessError as e:
         print(f"❌ 下載失敗：{url}\n{e}")
 
-def call_yt_dlp_video(url, output_path, audio_format=None, audio_quality=None):
+def call_yt_dlp_video(url, output_path):
     yt_dlp_path = extract_binary("yt-dlp.exe")
     if not os.path.exists(yt_dlp_path):
         print("❌ 錯誤：找不到 yt-dlp.exe")
@@ -155,7 +155,7 @@ def download_music(search_queries, options, progress_callback):
             os.environ["PATH"] = os.path.dirname(ffmpeg_path) + ";" + os.environ["PATH"]
 
             if download_type == "video":
-                call_yt_dlp_video(query, output_path, audio_format=format_selected, audio_quality=quality_selected)
+                call_yt_dlp_video(query, output_path)
             else:
                 call_yt_dlp(query, output_path, format_selected, quality_selected)
 
