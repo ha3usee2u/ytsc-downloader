@@ -1,6 +1,6 @@
 # ytsc-downloader
 
-For education only.
+# **For education only.**
 
 音樂下載器，具有圖形化介面、智慧搜尋、音訊格式選擇、長度篩選等功能，並且支援免安裝單檔執行。基於 yt-dlp 與 ffmpeg 打造，快速又穩定。
 

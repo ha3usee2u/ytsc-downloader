@@ -2,10 +2,20 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from downloader import download_music
 from utils import preprocess_queries, is_url, smart_query_mode
-from config import DEFAULT_FORMAT, DEFAULT_QUALITY, DEFAULT_SLEEP, DEFAULT_MIN_DURATION_MINUTES, \
-DEFAULT_MAX_DURATION_MINUTES, DEFAULT_PLATFORM, DEFAULT_OUTPUT_DIR, DEFAULT_REMOVE_NUMBER, DEFAULT_MAX_RESULTS
+from config import (
+    DEFAULT_FORMAT,
+    DEFAULT_QUALITY,
+    DEFAULT_SLEEP,
+    DEFAULT_MIN_DURATION_MINUTES,
+    DEFAULT_MAX_DURATION_MINUTES,
+    DEFAULT_PLATFORM,
+    DEFAULT_OUTPUT_DIR,
+    DEFAULT_REMOVE_NUMBER,
+    DEFAULT_MAX_RESULTS,
+)
 import os
 import threading
+
 
 def start_gui():
     def browse_directory():
@@ -29,7 +39,7 @@ def start_gui():
         root.update_idletasks()
 
     def start_download():
-        download_button.config(text="下載中...", state="disabled") # 禁用按鈕
+        download_button.config(text="下載中...", state="disabled")  # 禁用按鈕
 
         raw_text = query_entry.get("1.0", tk.END).strip()
         queries = preprocess_queries(raw_text, remove_number_var.get())
@@ -69,7 +79,7 @@ def start_gui():
             "max_duration": max_duration,
             "sleep": sleep_interval,
             "max_results": max_results,
-            "download_type": download_type.get()
+            "download_type": download_type.get(),
         }
 
         def finish_download_ui(success, skipped):
@@ -114,7 +124,9 @@ def start_gui():
     query_entry.bind("<KeyRelease>", lambda e: refresh_preview())
 
     remove_number_var = tk.BooleanVar(value=True)
-    remove_number_check = tk.Checkbutton(query_frame, text="自動去除數字標號", variable=remove_number_var)
+    remove_number_check = tk.Checkbutton(
+        query_frame, text="自動去除數字標號", variable=remove_number_var
+    )
     remove_number_check.pack(anchor="w", pady=(5, 0))
 
     tk.Label(query_frame, text="歌曲預覽（已判別是否為 URL）:").pack(anchor="w")
@@ -133,7 +145,13 @@ def start_gui():
     # 📌 下載類型下拉選單
     tk.Label(setting_frame, text="下載類型:").pack(anchor="w", pady=(10, 0))
     download_type = tk.StringVar(value="audio")
-    download_type_box = ttk.Combobox(setting_frame, textvariable=download_type, values=["audio", "video"], state="readonly", width=10)
+    download_type_box = ttk.Combobox(
+        setting_frame,
+        textvariable=download_type,
+        values=["audio", "video"],
+        state="readonly",
+        width=10,
+    )
     download_type_box.pack()
 
     # 建立音訊設定區塊
@@ -143,16 +161,26 @@ def start_gui():
     label_audio_format = tk.Label(audio_settings_frame, text="音訊格式:")
     label_audio_format.pack(anchor="w", pady=(10, 0))
     audio_format = tk.StringVar(value="mp3")
-    combo_audio_format = ttk.Combobox(audio_settings_frame, textvariable=audio_format,
-                                    values=["mp3", "m4a", "wav"], state="readonly", width=10)
+    combo_audio_format = ttk.Combobox(
+        audio_settings_frame,
+        textvariable=audio_format,
+        values=["mp3", "m4a", "wav"],
+        state="readonly",
+        width=10,
+    )
     combo_audio_format.pack()
 
     # 音訊品質
     label_audio_quality = tk.Label(audio_settings_frame, text="音訊品質 (kbps):")
     label_audio_quality.pack(anchor="w", pady=(10, 0))
     audio_quality = tk.StringVar(value="320")
-    combo_audio_quality = ttk.Combobox(audio_settings_frame, textvariable=audio_quality,
-                                        values=["128", "192", "320"], state="readonly", width=10)
+    combo_audio_quality = ttk.Combobox(
+        audio_settings_frame,
+        textvariable=audio_quality,
+        values=["128", "192", "320"],
+        state="readonly",
+        width=10,
+    )
     combo_audio_quality.pack()
 
     # 用 pack() 固定位置（初始顯示）
@@ -174,7 +202,6 @@ def start_gui():
     # 綁定事件
     download_type_box.bind("<<ComboboxSelected>>", toggle_audio_settings)
 
-
     # 建立新的一列 Frame
     duration_frame = tk.Frame(setting_frame)
     duration_frame.pack(anchor="w", pady=(10, 0))
@@ -191,19 +218,29 @@ def start_gui():
     max_duration_entry.insert(0, "10")
     max_duration_entry.pack(side="left", padx=5)
 
-    tk.Label(setting_frame, text="間隔秒數 sleep_interval:").pack(anchor="w", pady=(10, 0))
+    tk.Label(setting_frame, text="間隔秒數 sleep_interval:").pack(
+        anchor="w", pady=(10, 0)
+    )
     sleep_entry = tk.Entry(setting_frame, width=10)
     sleep_entry.insert(0, "10")
     sleep_entry.pack()
 
-    tk.Label(setting_frame, text="最大搜尋結果數（max_results）:").pack(anchor="w", pady=(10, 0))
+    tk.Label(setting_frame, text="最大搜尋結果數（max_results）:").pack(
+        anchor="w", pady=(10, 0)
+    )
     max_results_entry = tk.Entry(setting_frame, width=10)
     max_results_entry.insert(0, "3")  # 預設值，例如只抓前三筆
     max_results_entry.pack()
 
     tk.Label(setting_frame, text="來源平台:").pack(anchor="w", pady=(10, 0))
     source_platform = tk.StringVar(value="YouTube")
-    ttk.Combobox(setting_frame, textvariable=source_platform, values=["YouTube", "SoundCloud"], state="readonly", width=15).pack()
+    ttk.Combobox(
+        setting_frame,
+        textvariable=source_platform,
+        values=["YouTube", "SoundCloud"],
+        state="readonly",
+        width=15,
+    ).pack()
 
     download_button = tk.Button(setting_frame, text="開始下載", command=start_download)
     download_button.pack(pady=(15, 5))
@@ -213,12 +250,11 @@ def start_gui():
     progress_label = tk.Label(
         setting_frame,
         text="準備下載...",
-        width=40,              # 固定寬度（可微調）
-        anchor="w",            # 左對齊
-        justify="left",        # 左段落對齊
-        wraplength=300         # 限定換行寬度
+        width=40,  # 固定寬度（可微調）
+        anchor="w",  # 左對齊
+        justify="left",  # 左段落對齊
+        wraplength=300,  # 限定換行寬度
     )
     progress_label.pack()
 
     root.mainloop()
-
