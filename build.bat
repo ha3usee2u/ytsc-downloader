@@ -1,7 +1,6 @@
 @echo off
 set MAIN_SCRIPT=main.py
 set ICON_FILE=icon.ico
-set PYINSTALLER=pyinstaller
 
 REM 🔍 檢查 yt-dlp.exe 是否存在，否則下載
 IF NOT EXIST yt-dlp.exe (
@@ -28,13 +27,13 @@ del /q __pycache__\*.pyc 2>nul
 echo 🛠 檢查圖示檔是否存在：%ICON_FILE%
 IF EXIST %ICON_FILE% (
     echo ✅ 找到圖示檔，使用圖示打包...
-    %PYINSTALLER% --onefile --windowed %MAIN_SCRIPT% ^
+    python -m PyInstaller --onefile --windowed %MAIN_SCRIPT% ^
      --add-data "yt-dlp.exe;." ^
      --add-data "ffmpeg.exe;." ^
      --icon=%ICON_FILE%
 ) ELSE (
     echo ⚠️ 沒有圖示檔，略過 --icon 打包...
-    %PYINSTALLER% --onefile --windowed %MAIN_SCRIPT% ^
+    python -m PyInstaller --onefile --windowed %MAIN_SCRIPT% ^
      --add-data "yt-dlp.exe;." ^
      --add-data "ffmpeg.exe;."
 )

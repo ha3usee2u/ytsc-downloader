@@ -1,13 +1,14 @@
+import datetime
+import json
+import os
+import shutil
 import subprocess
 import sys
-import os
 import tempfile
-import shutil
 import time
-import json
-from utils import smart_query_mode
 from urllib.parse import urlparse
-import datetime
+
+from utils import smart_query_mode
 
 
 def extract_binary(name):

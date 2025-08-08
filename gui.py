@@ -1,20 +1,21 @@
-import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
-from downloader import download_music
-from utils import preprocess_queries, is_url, smart_query_mode
-from config import (
-    DEFAULT_FORMAT,
-    DEFAULT_QUALITY,
-    DEFAULT_SLEEP,
-    DEFAULT_MIN_DURATION_MINUTES,
-    DEFAULT_MAX_DURATION_MINUTES,
-    DEFAULT_PLATFORM,
-    DEFAULT_OUTPUT_DIR,
-    DEFAULT_REMOVE_NUMBER,
-    DEFAULT_MAX_RESULTS,
-)
 import os
 import threading
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
+
+from config import (
+    DEFAULT_FORMAT,
+    DEFAULT_MAX_DURATION_MINUTES,
+    DEFAULT_MAX_RESULTS,
+    DEFAULT_MIN_DURATION_MINUTES,
+    DEFAULT_OUTPUT_DIR,
+    DEFAULT_PLATFORM,
+    DEFAULT_QUALITY,
+    DEFAULT_REMOVE_NUMBER,
+    DEFAULT_SLEEP,
+)
+from downloader import download_music
+from utils import is_url, preprocess_queries, smart_query_mode
 
 
 def start_gui():
